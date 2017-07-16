@@ -155,3 +155,58 @@ f(); // {} (in nonconformant environments)
 
 // nonstandard behaviour of ES3 hoisting
 var f = function g() { return 17; }; var g = null;
+
+// avoid named function expressions
+
+// ITEM 25: Beware of Unportable Scoping of Block-Local Function Declarations
+
+// nesting a function declaration at the top of another function
+function f() { return "global"; }
+function test(x) {
+	function f() { return "local"; }
+	var result = [];
+	if (x) {
+		result.push(f());
+	}
+	result.push(f());
+	return result;
+}
+test(true); // ["local", "local"]
+test(false); // ["local"]
+
+// avoid putting function declarations in local blocks ior substatements
+function f() { return "global"; }
+
+function test(x) {
+	var g = f, result = [];
+	if (x) {
+		g = function() { return "local"; }
+		result.push(g());
+	}
+	result.push(g());
+	return result;
+}
+
+// Avoid creating local variables with eval
+
+// run eval in an implicitly nested scope
+var y = "global";
+function test(src) {
+	(function() { eval(src); })();
+	return y;
+}
+
+test("var y = 'local';"); // "global" test("var z = 'local';"); // "global"
+
+// ITEM 17: Prefer indirect eval to Direct eval
+
+// eval has access to full scope at the point which it is called
+
+
+var x = "global";
+function test() {
+	var x = "local";
+	var f = eval;
+	return f("x"); // indirect eval
+}
+test(); // "global"
