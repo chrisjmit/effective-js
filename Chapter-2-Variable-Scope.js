@@ -147,3 +147,11 @@ function wrapElements(a) {
 
 
 // ITEM 14: Beware of unportable scoping of named function expressions
+
+
+var constructor = function() { return null; }; var f = function() {
+return constructor(); };
+f(); // {} (in nonconformant environments)
+
+// nonstandard behaviour of ES3 hoisting
+var f = function g() { return 17; }; var g = null;
