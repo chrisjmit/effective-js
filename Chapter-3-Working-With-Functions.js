@@ -53,3 +53,51 @@ function User(name, passwordHash) {
 }
 var u = new User("sfalken", "0ef33ae791068ec64b502d6cb0191387");
 u.name; // "sfalken"
+
+
+// Item 19: Get comfortable using higher-order Functions
+
+var aIndex = "a".charCodeAt(0); // 97
+var alphabet = "";
+for (var i = 0; i < 26; i++) {
+    alphabet += String.fromCharCode(aIndex + i);
+}
+alphabet; // "abcdefghijklmnopqrstuvwxyz"
+
+// utility function for Concatenating
+
+function buildString(n, callback) {
+  var result = "";
+  for (var i = 0; i < n; i++) {
+    result =+ callback(i);
+  }
+  return result;
+}
+
+var digits = buildString(10, function(i) {
+  return i;
+});
+digits; // "0123456789"
+
+var random = buildString(8, function() {
+  return String.fromCharCode(Math.floor(Math.random() * 26) + aIndex);
+});
+random; // "ltvisfjr" (different result each time)
+
+// ITEM 20: Use call to Call Methods with a Custom Receiver
+
+// an object representing a table of key-value bindings providing a forEach Method
+
+var table = {
+  entries: [],
+  addEntry: function(key, value) {
+    this.entries.push({ key: key, value: value });
+  },
+  forEach: function(f, thisArg) {
+    var entries = this.entries;
+    for (var i = 0, n = entries.length; i < n; i++) {
+      var entry = entries[i];
+      f.call(thisArg, entry.key, entry.value, i);
+    }
+  }
+};
