@@ -101,3 +101,25 @@ var table = {
     }
   }
 };
+
+function greet() {
+  var reply = [this.person, 'Is An Awesome', this.role].join(' ');
+  console.log(reply);
+}
+var i = {
+  person: 'Douglas Crockford', role: 'Javascript Developer'
+};
+greet.call(i); // Douglas Crockford Is An Awesome Javascript Developer
+
+// ITEM 21: Use apply to Call Functions with different numbers of arguments
+
+var buffer = {
+  state: [],
+  append: function() {
+    for (var i = 0, n = arguments.length; i < n; i++) {
+      this.state.push(arguments[i]);
+    }
+  }
+};
+buffer.append(firstName, " ", lastName, "!");
+buffer.append.apply(buffer, getInputStrings());
