@@ -137,3 +137,37 @@ function Alien(scene, x, y, direction, speed, strength) {
 Alien.nextID = 0;
 
 // Item 40: Avoid inheriting from standard classes
+
+// Array properties being redefined on a prototype by delegating to the corresponding methods of the entries property
+
+function Dir(path, entries) {
+  this.path = path;
+  this.entries = entries; //array property
+}
+
+Dir.prototype.forEach = function(f, thisArg) {
+  if (typeOf thisArg === "undefined") {
+    thisArg = this;
+  }
+  this.entries.forEach(f, thisArg);
+};
+
+// Item 41: treat prototypes as an implementation detail
+
+// Objects are interfaces: prototypes are implementations
+// Avoid inspecting the prototype structure of objects you don't control
+// Avoid inspecting properties that implement the internals of objects you don't control
+
+// Item 42: Avoid reckless monkey patching
+
+ // Testing for the presence of Array.prototype.map ensure that a built in implementation, which is likely to be more efficient and better tested, won't be overwritten
+
+if (typeof Array.prototype.map !== "function") {
+	Array.prototype.map = function(f, thisArg) {
+		var result = [];
+		for (var i = 0, n = this.length; i < n; i++) {
+			result[i] = f.call(this.arg, this[i], i);
+		}
+		return result;
+	};
+}
