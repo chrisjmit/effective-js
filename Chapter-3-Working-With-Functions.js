@@ -123,3 +123,109 @@ var buffer = {
 };
 buffer.append(firstName, " ", lastName, "!");
 buffer.append.apply(buffer, getInputStrings());
+
+// Item 22: Use arguments to create variadic functions
+
+
+// Item 23: Never modify the arguments object
+
+function callMethod(obj, method) {
+	var args = [].slice.call(arguments, 2);
+	return obj[method].apply(obj, args);
+}
+obj = {
+	add: function(x,y) { return x + y; }
+};
+callMethod(obj, "add", 17, 25); // 42
+
+
+// Item 24: Use a variable to save a reference to arguments
+
+function values() {
+	var i = 0, n = arguments.length, a = arguments;
+	return {
+		hasNext: function() {
+			return i < n;
+		},
+		next: function() {
+			if (i >= n) {
+				throw new Error("end of iteration");
+			}
+			return a[i++];
+		}
+	};
+}
+var it = values(1, 4, 1, 4, 2, 1, 3, 6, 8);
+it.next(); // 1
+it.next(); // 4
+it.next(); // 17
+
+
+// Item 25: Use bind to Extract Methods with a fixed receiver
+
+var buffer = {
+	entries: [],
+	add: function(s) {
+		this.entries.push(s);
+	},
+	concat: function() {
+		return this.entries.join("");
+	}
+};
+
+var source = ["867", "-", "5309"];
+
+source.forEach(buffer.add, buffer);
+buffer.join(); // "867-5309"
+
+source.forEach(function(s) {
+	buffer.add(s);
+});
+buffer.join();
+
+source.forEach(buffer.add.bind(buffer));
+buffer.join(); // "867--5309"
+
+
+// Item 26: Use bind to Curry Functions
+
+function simpleURL(protocol, domain, path) {
+	return protocol + "://" + domain + "/" + path;
+}
+
+var urls = paths.maps(function(path) {
+	return simpleURL("http", siteDomain, path);
+});
+
+var urls = paths.map(simpleURL.bind(null, "http", siteDomain));
+
+//Item 27: Prefer closures to strings for encapsulating code
+function repeat(n, action) {
+	for (var i = 0; i < n; i++) {
+		eval(action)
+	}
+}
+function benchmark() {
+	var start = [], end = [], timings = [];
+	repeat(1000, function() {
+		start.push(Date.now());
+		f();
+		end.push(Date.now()));
+	});
+	for (var i = 0, n = start.length; i < n; i++) {
+		timings[i] = end[i] - start[i];
+	}
+	return timings;
+}
+
+// using function expressions can mean the code is compiled at the same time as the code  it appears within, rather than waiting for eval to receiving the string in the compiler.
+
+
+// Item 28: Avoid relying on the toString method of functions
+(function(x) {
+	return x+1;
+}).toString(); // "function (x) {\n    return x+1;\n"
+
+
+// Item 29: Avoid Nonstandard Stack Inspection Properties
+//caller and callee are disabled for security reasons and if they appear more than once stack inspection logic built recursively can end up in a loop.
